@@ -1,0 +1,94 @@
+---
+title: "Recodage variable"
+author: "Christian"
+date: "2024-02-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, dpi = 300, warning = FALSE, message = FALSE, dev = "png")
+```
+
+## Installation package----
+
+```{r}
+library(gtsummary)
+library(tidyverse)
+library(forcats)
+library(labelled)
+```
+
+## Importation jeux de données----
+
+```{r}
+load("C:/Users/krist/Downloads/enquete_menages.RData")
+```
+
+
+```{r}
+femmes <- femmes |>  unlabelled()
+menages <- menages |> unlabelled()
+enfants <- enfants |> unlabelled()
+```
+
+## Recodage des variables----
+
+```{r}
+# Sexe du chef de ménage
+menages$sexe_chef_m <- menages$sexe_chef |>
+  as.factor() |>
+  fct_recode(
+    "femme" = "2",
+    "homme" = "1"
+  ) |>
+  set_variable_labels(sexe_chef_m = "sexe du chef de ménage")
+
+# Milieu de résidence
+femmes$milieu <- femmes$milieu |>
+  as.factor() |>
+  fct_recode(
+    "rural" = "2",
+    "urbain" = "1"
+  )
+
+# Niveau d'éducation
+
+femmes$educ <- femmes$educ |>
+  as.factor() |>
+  fct_recode(
+    "aucun niveau" = "0",
+    "primaire" = "1",
+    "secondaire" = "2",
+    "superieur" = "3"
+  )
+
+# Situation matrimoniale
+femmes$matri <- femmes$matri |>
+  as.factor() |>
+  fct_recode(
+    "marié(e)" = "1",
+    "célibataire" = "2",
+    "divorcé(e)" = "3",
+    "veuf(ve)" = "4",
+    "concubinage" = "5"
+  )
+
+# Réligion
+femmes$religion <- femmes$region |>
+  as.factor() |>
+  fct_recode(
+    "chrétien" = "1",
+    "musulman" = "2",
+    "animiste" = "3"
+  )
+# Tranche
+
+menages$taille_menages <- cut(menages$taille,
+  include.lowest = TRUE,
+  right = TRUE,
+  dig.lab = 4,
+  breaks = c(-Inf, 10, 20, 30, Inf)
+) |>
+  factor(labels = c("Moins de 10 menbres", "De 10 à 20 menbres", "De 20 à 30 menbres", " 30 menbres et plus")) |>
+  set_variable_labels(taille_menages = "Tranche taille de ménage")
+```
